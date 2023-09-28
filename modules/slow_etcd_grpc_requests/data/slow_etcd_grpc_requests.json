@@ -1,0 +1,234 @@
+{
+  "name": "slow_etcd_grpc_requests",
+  "description": "The incident type \"Slow Etcd GRPC Requests\" is triggered when the performance of Etcd GRPC requests slows down. This may be due to HTTP requests slowing down, and the 99th percentile exceeding 0.15s. This incident can affect the overall performance of the system, and needs to be resolved promptly.",
+  "params": [
+    {
+      "name": "MEMORY_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "INTERFACE_NAME",
+      "value": ""
+    },
+    {
+      "name": "CPU_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "NETWORK_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "DISK_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "NEW_NODE_COUNT",
+      "value": ""
+    },
+    {
+      "name": "NEW_NODE_IP",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Slow Etcd GRPC Requests\nThe incident type \"Slow Etcd GRPC Requests\" is triggered when the performance of Etcd GRPC requests slows down. This may be due to HTTP requests slowing down, and the 99th percentile exceeding 0.15s. This incident can affect the overall performance of the system, and needs to be resolved promptly."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the current CPU usage"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `top -b -n 1 | head -n 20`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the current memory usage"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `free -m`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the network connections to the affected instance"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `ss -s`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the network traffic on the affected network interface"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `ifstat -i ${INTERFACE_NAME} 1`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd logs for errors or warnings"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `journalctl -u etcd.service | tail -n 100`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the GRPC logs for errors or warnings"
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `journalctl -u grpc.service | tail -n 100`"
+    },
+    {
+      "name": "cell_14",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the Prometheus metrics for etcd and GRPC"
+    },
+    {
+      "name": "cell_15",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `curl -s http://localhost:9090/metrics | grep etcd | grep grpc`"
+    },
+    {
+      "name": "cell_16",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd cluster health"
+    },
+    {
+      "name": "cell_17",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `etcdctl cluster-health`"
+    },
+    {
+      "name": "cell_18",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd member list"
+    },
+    {
+      "name": "cell_19",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `etcdctl member list`"
+    },
+    {
+      "name": "cell_20",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd endpoint status"
+    },
+    {
+      "name": "cell_21",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `etcdctl endpoint status`"
+    },
+    {
+      "name": "cell_22",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd key space size"
+    },
+    {
+      "name": "cell_23",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `etcdctl endpoint fsync total`"
+    },
+    {
+      "name": "cell_24",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd watch counts"
+    },
+    {
+      "name": "cell_25",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `etcdctl watch count`"
+    },
+    {
+      "name": "cell_26",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the etcd snapshot size"
+    },
+    {
+      "name": "cell_27",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `du -sh /var/lib/etcd/member/snap/db`"
+    },
+    {
+      "name": "cell_28",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Resource contention on the etcd cluster."
+    },
+    {
+      "name": "cell_29",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_resource_check($MEMORY_LIMIT, $CPU_LIMIT, $NETWORK_LIMIT, $DISK_LIMIT)"
+    },
+    {
+      "name": "cell_30",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Increase the number of etcd nodes to improve the capacity of the cluster."
+    },
+    {
+      "name": "cell_31",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "host | host_name=$HOST_NAME | invoke_increase_etcd_capacity($NEW_NODE_COUNT, $NEW_NODE_IP)"
+    }
+  ]
+}
