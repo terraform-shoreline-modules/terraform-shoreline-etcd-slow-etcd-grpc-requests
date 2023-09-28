@@ -3,15 +3,15 @@
   "description": "The incident type \"Slow Etcd GRPC Requests\" is triggered when the performance of Etcd GRPC requests slows down. This may be due to HTTP requests slowing down, and the 99th percentile exceeding 0.15s. This incident can affect the overall performance of the system, and needs to be resolved promptly.",
   "params": [
     {
-      "name": "MEMORY_LIMIT",
-      "value": ""
-    },
-    {
-      "name": "INTERFACE_NAME",
-      "value": ""
-    },
-    {
       "name": "CPU_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "NEW_NODE_COUNT",
+      "value": ""
+    },
+    {
+      "name": "MEMORY_LIMIT",
       "value": ""
     },
     {
@@ -23,7 +23,7 @@
       "value": ""
     },
     {
-      "name": "NEW_NODE_COUNT",
+      "name": "INTERFACE_NAME",
       "value": ""
     },
     {
@@ -216,7 +216,7 @@
       "name": "cell_29",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_resource_check($MEMORY_LIMIT, $CPU_LIMIT, $NETWORK_LIMIT, $DISK_LIMIT)"
+      "content": "host | host_name=$HOST_NAME | invoke_resource_check($CPU_LIMIT, $MEMORY_LIMIT, $NETWORK_LIMIT, $DISK_LIMIT)"
     },
     {
       "name": "cell_30",
@@ -228,7 +228,7 @@
       "name": "cell_31",
       "type": "OP_LANG",
       "enabled": true,
-      "content": "host | host_name=$HOST_NAME | invoke_increase_etcd_capacity($NEW_NODE_COUNT, $NEW_NODE_IP)"
+      "content": "host | host_name=$HOST_NAME | invoke_etcd_node_scale_up($NEW_NODE_COUNT, $NEW_NODE_IP)"
     }
   ]
 }
